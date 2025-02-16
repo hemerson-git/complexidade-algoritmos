@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 public class Routes {
 
   private static final String ENCRYPTION_ALGORITHM = "RSA";
-  private static final String PRIVATE_KEY_PATH = "/misc/ifba/workspaces/complexidade/10/servidor/pacientes/chave/privada.chv";
+  private static final String PRIVATE_KEY_PATH = "C:/Users/hemer/OneDrive/Área de Trabalho/IFBA/complexidade_algoritmos/printer_version2/server/key/private.key";
   
   private PrivateKey chave = null;
 
@@ -65,24 +65,26 @@ public class Routes {
   }
     
   @GET()
-  @Path("{id}/{speed}/{sheets}/{maintenance}")
+  @Path("{encrypted}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response receiveData(@PathParam("encrypted") String encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException
   {
-      String json = decrypt(Base64.getUrlDecoder().decode(encrypted));
+    String json = decrypt(Base64.getUrlDecoder().decode(encrypted));
 
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode dict = mapper.readTree(json);
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode node = mapper.readTree(json);
 
-      String id = dict.get("id").asText();
-      int speed = dict.get("speed").asInt();
-      int sheetQtty = dict.get("sheetQtty").asInt();
-      boolean maintenance = dict.get("maintenance").asBoolean();
+    System.out.println(node.toString());
     
-      MyPrinter printer = new MyPrinter(id, speed, sheetQtty, maintenance);
-      DataStore.addData(printer);
-      System.out.println("Data received: " + printer.toString());
-      return Response.ok("ok").build();
+    String id = node.get("id").asText();
+    int speed = node.get("speed").asInt();
+    int sheetQtty = node.get("sheets").asInt();
+    Boolean maintenance = node.get("maintenance").asBoolean();
+
+    MyPrinter printer = new MyPrinter(id, speed, sheetQtty, maintenance);
+    DataStore.addData(printer);
+    System.out.println("Data received: " + printer.toString());
+    return Response.ok("ok").build();
   }
 
   @GET
