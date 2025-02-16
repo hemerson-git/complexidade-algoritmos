@@ -24,7 +24,7 @@ public class App {
             process.start();
         }
 
-        System.out.println("Enviando Leituras para o servidor!");
+        System.out.println("Sending readings to the server!");
 
         // O(N)
         for (Thread process : processes) {
